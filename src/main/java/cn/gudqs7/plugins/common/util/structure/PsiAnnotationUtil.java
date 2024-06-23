@@ -1,10 +1,12 @@
 package cn.gudqs7.plugins.common.util.structure;
 
 import com.intellij.codeInsight.AnnotationUtil;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiAnnotation;
-import com.intellij.psi.PsiAnnotationMemberValue;
-import com.intellij.psi.PsiReferenceExpression;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.*;
+import com.intellij.psi.impl.source.tree.java.PsiReferenceExpressionImpl;
+import com.intellij.psi.search.FilenameIndex;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiUtil;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +15,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * 注解工具类
@@ -131,7 +134,9 @@ public class PsiAnnotationUtil {
             String prefixWithRequestMethod = "RequestMethod.";
             if (text.startsWith(prefixWithRequestMethod)) {
                 return text.substring(prefixWithRequestMethod.length());
-            } else {
+            } else if(!Pattern.compile("^-?\\d+(\\.\\d+)?$").matcher(text).matches()){//有可能是自定义的常量
+                return BaseTypeParseUtil.parseInt(psiReferenceExpression);
+            }else {
                 return text;
             }
         } else {
